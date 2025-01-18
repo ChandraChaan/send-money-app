@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/login_viewmodel.dart';
@@ -27,20 +28,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _isLoading = true;
       _errorMessage = '';
     });
-
-    try {
-      final apiService = ApiService();
-      final transactions = await apiService.fetchTransactions();
-      setState(() {
-        _recentTransactions = transactions.take(3).toList(); // Show top 3 transactions
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'No Internet Connection or Failed to Load Data';
-      });
-    } finally {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult != ConnectivityResult.none) {
+      try {
+        final apiService = ApiService();
+        final transactions = await apiService.fetchTransactions();
+        setState(() {
+          _recentTransactions =
+              transactions.take(3).toList(); // Show top 3 transactions
+        });
+      } catch (e) {
+        setState(() {
+          _errorMessage = 'Failed to Load Data';
+        });
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+    else {
       setState(() {
         _isLoading = false;
+        _errorMessage = 'No Internet Connection';
       });
     }
   }
@@ -71,7 +81,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               size: size.width * 0.07,
             ),
             onPressed: () {
-              Provider.of<LoginViewModel>(context, listen: false).logout(context);
+              Provider.of<LoginViewModel>(context, listen: false)
+                  .logout(context);
             },
           ),
         ],
@@ -119,7 +130,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       IconButton(
                         icon: Icon(
-                          _showBalance ? Icons.visibility_off : Icons.visibility,
+                          _showBalance
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           size: size.width * 0.07,
                           color: Colors.indigo,
                         ),

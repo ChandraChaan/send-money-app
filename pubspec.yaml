@@ -39,6 +39,10 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.5
   intl: ^0.20.1
+  mockito: ^5.0.17
+  http_mock_adapter: ^0.6.1
+  connectivity_plus: ^6.1.2
+  build_runner: ^2.3.3
 
 dev_dependencies:
   flutter_test:
