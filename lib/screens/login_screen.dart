@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../viewmodels/login_viewmodel.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -7,6 +10,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final loginViewModel = Provider.of<LoginViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -56,16 +60,19 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: size.height * 0.04),
               ElevatedButton(
-                onPressed: () {
-                  if (_usernameController.text == 'user' &&
-                      _passwordController.text == 'password') {
-                    Navigator.pushReplacementNamed(context, '/dashboard');
-                  } else {
+                onPressed: () async{
+                  final username = _usernameController.text;
+                  final password = _passwordController.text;
+
+                  try {
+                    await loginViewModel.login(username, password);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Invalid credentials!'),
-                        backgroundColor: Colors.redAccent,
-                      ),
+                      const SnackBar(content: Text('Login Successful!')),
+                    );
+                    Navigator.pushReplacementNamed(context, '/dashboard');
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.toString())),
                     );
                   }
                 },
@@ -102,22 +109,23 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "username: user, password: pass",
+                    // "Don't have an account? ",
                     style: TextStyle(fontSize: size.width * 0.04),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      // Add navigation to registration screen if needed
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Colors.indigo,
-                        fontSize: size.width * 0.04,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  // TextButton(
+                  //   onPressed: () {
+                  //     // Add navigation to registration screen if needed
+                  //   },
+                  //   child: Text(
+                  //     'Sign Up',
+                  //     style: TextStyle(
+                  //       color: Colors.indigo,
+                  //       fontSize: size.width * 0.04,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ],

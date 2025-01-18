@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../viewmodels/login_viewmodel.dart';
+import '../viewmodels/transaction_viewmodel.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -11,19 +15,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final transactionViewModel = Provider.of<TransactionViewModel>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Dashboard',
-          style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold, fontSize: size.width * 0.05),
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: size.width * 0.05),
         ),
         centerTitle: true,
         backgroundColor: Colors.indigo,
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout, color: Colors.white, size: size.width * 0.07),
+            icon: Icon(Icons.logout,
+                color: Colors.white, size: size.width * 0.07),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, '/');
+              Provider.of<LoginViewModel>(context, listen: false)
+                  .logout(context);
             },
           ),
         ],
@@ -58,7 +70,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            _showBalance ? '₹1500.00' : '******',
+                            _showBalance
+                                ? '₹${transactionViewModel.walletBalance}'
+                                : '******',
                             style: TextStyle(
                               fontSize: size.width * 0.08,
                               fontWeight: FontWeight.bold,
@@ -69,7 +83,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       IconButton(
                         icon: Icon(
-                          _showBalance ? Icons.visibility_off : Icons.visibility,
+                          _showBalance
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                           size: size.width * 0.07,
                           color: Colors.indigo,
                         ),
@@ -92,7 +108,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(fontSize: size.width * 0.045),
                 ),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.indigo,
                   padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -108,7 +125,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(fontSize: size.width * 0.045),
                 ),
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.indigo,
                   padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
