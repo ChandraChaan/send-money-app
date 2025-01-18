@@ -6,38 +6,122 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: 'Password'),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                if (_usernameController.text == 'user' &&
-                    _passwordController.text == 'password') {
-                  Navigator.pushReplacementNamed(context, '/dashboard');
-                } else {
+      appBar: AppBar(
+        title: const Text(
+          'Login',
+          style: TextStyle(color:Colors.white,fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Welcome Back!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: size.width * 0.07,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.indigo,
+                ),
+              ),
+              SizedBox(height: size.height * 0.03),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  prefixIcon: const Icon(Icons.person, color: Colors.indigo),
+                ),
+              ),
+              SizedBox(height: size.height * 0.02),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  prefixIcon: const Icon(Icons.lock, color: Colors.indigo),
+                ),
+              ),
+              SizedBox(height: size.height * 0.04),
+              ElevatedButton(
+                onPressed: () {
+                  if (_usernameController.text == 'user' &&
+                      _passwordController.text == 'password') {
+                    Navigator.pushReplacementNamed(context, '/dashboard');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Invalid credentials!'),
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: size.height * 0.02), backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                ),
+                child: Text(
+                  'Login',
+                  style: TextStyle(fontSize: size.width * 0.05, color: Colors.white),
+                ),
+              ),
+              SizedBox(height: size.height * 0.02),
+              TextButton(
+                onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Invalid credentials!')),
+                    const SnackBar(
+                      content: Text('Forgot Password feature is not implemented yet!'),
+                    ),
                   );
-                }
-              },
-              child: Text('Login'),
-            ),
-          ],
+                },
+                child: Text(
+                  'Forgot Password?',
+                  style: TextStyle(
+                    color: Colors.indigo,
+                    fontSize: size.width * 0.04,
+                  ),
+                ),
+              ),
+              SizedBox(height: size.height * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(fontSize: size.width * 0.04),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Add navigation to registration screen if needed
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.indigo,
+                        fontSize: size.width * 0.04,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
