@@ -3,13 +3,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewModel extends ChangeNotifier {
   bool _isLoggedIn = false;
+  bool _isInitialized = false;
 
   bool get isLoggedIn => _isLoggedIn;
+  bool get isInitialized => _isInitialized;
 
   // Initialize login status from local storage
   Future<void> initializeLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    _isInitialized = true;
     notifyListeners();
   }
 

@@ -21,14 +21,24 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<LoginViewModel>(
         builder: (context, loginViewModel, child) {
+          if (!loginViewModel.isInitialized) {
+            // Show a splash screen or loader while the initialization is in progress
+            return const MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
+          }
+
           return MaterialApp(
             title: 'Send Money App',
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),
-            initialRoute: loginViewModel.isLoggedIn ? '/dashboard' : '/',
+            home: loginViewModel.isLoggedIn ? DashboardScreen() : LoginScreen(),
             routes: {
-              '/': (context) => LoginScreen(),
               '/dashboard': (context) => DashboardScreen(),
               '/send-money': (context) => SendMoneyScreen(),
               '/transactions': (context) => TransactionsScreen(),

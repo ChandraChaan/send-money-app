@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../viewmodels/login_viewmodel.dart';
 import '../viewmodels/transaction_viewmodel.dart';
+import '../services/api_service.dart';
+import '../models/transaction.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -11,6 +12,38 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _showBalance = true;
+  bool _isLoading = false;
+  String _errorMessage = '';
+  List<Transaction> _recentTransactions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTransactions();
+  }
+
+  Future<void> _fetchTransactions() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final apiService = ApiService();
+      final transactions = await apiService.fetchTransactions();
+      setState(() {
+        _recentTransactions = transactions.take(3).toList(); // Show top 3 transactions
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'No Internet Connection or Failed to Load Data';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +55,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Text(
           'Dashboard',
           style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: size.width * 0.05),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: size.width * 0.05,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.indigo,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout,
-                color: Colors.white, size: size.width * 0.07),
+            icon: Icon(
+              Icons.logout,
+              color: Colors.white,
+              size: size.width * 0.07,
+            ),
             onPressed: () {
-              Provider.of<LoginViewModel>(context, listen: false)
-                  .logout(context);
+              Provider.of<LoginViewModel>(context, listen: false).logout(context);
             },
           ),
         ],
@@ -83,9 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       IconButton(
                         icon: Icon(
-                          _showBalance
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          _showBalance ? Icons.visibility_off : Icons.visibility,
                           size: size.width * 0.07,
                           color: Colors.indigo,
                         ),
@@ -133,6 +167,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: size.height * 0.04),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Note: These are sample API data fetched from the placeholder service.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (_errorMessage.isNotEmpty)
+                Center(
+                  child: Text(
+                    _errorMessage,
+                    style: TextStyle(
+                      fontSize: size.width * 0.045,
+                      color: Colors.red,
+                    ),
+                  ),
+                )
+              else
+                ..._recentTransactions.map((transaction) {
+                  return Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        'Amount: ${transaction.amount}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text('Date: ${transaction.date}'),
+                      leading: Icon(
+                        Icons.monetization_on,
+                        color: Colors.green,
+                      ),
+                    ),
+                  );
+                }).toList(),
             ],
           ),
         ),
